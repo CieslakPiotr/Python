@@ -1,0 +1,14 @@
+{
+    "Bus": {
+        "Amount": "8",
+        "Expense Type": "Expense"
+    },
+    "Salary": {
+        "Amount": "2600",
+        "Expense Type": "Income"
+    },
+    "Taxi": {
+        "Amount": "28",
+        "Expense Type": "Expense"
+    }
+}
