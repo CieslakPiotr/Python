@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import json
+import matplotlib.pyplot as plt
+import numpy as np
 
 # ---------------------------- SAVE EXPENSES ------------------------------- #
 def save_expenses():
@@ -35,6 +37,31 @@ def save_expenses():
 
     clear()
     messagebox.showinfo(title="Expenses Message", message="Expenses added successfully.")
+
+# ------------------------- Graph Pop-Up ------------------------ #
+def open_popup():
+    top = Toplevel(window)
+    top.geometry("750x250")
+    top.title("Expenses Graph")
+
+    with open("data.json", "r") as data_file:
+        data = json.load(data_file)
+
+    income = 0
+    expenses = 0
+
+    for item in data.values():
+        amount = int(item["Amount"])
+        if item["Expense Type"] == "Income":
+            income += amount
+        elif item["Expense Type"] == "Expense":
+            expenses += amount
+
+    y = np.array([income, expenses])
+    labels = ["Income", "Expenses"]
+
+    plt.pie(y, labels=labels, startangle=90)
+    plt.show()
 
 # ---------------------------- UI ------------------------------- #
 window = Tk()
@@ -73,5 +100,8 @@ dropdownExpenses.grid(row=4, column=3, sticky="w", padx=5)
 
 add_button = Button(text="Add Expense", command=save_expenses)
 add_button.grid(row=5, column=0, columnspan=6)
+
+display_graph = Button(text="Show Expenses", command=open_popup)
+display_graph.grid(row=6, column=0, columnspan=6)
 
 window.mainloop()
