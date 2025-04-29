@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import json
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 
 # ---------------------------- SAVE EXPENSES ------------------------------- #
@@ -16,17 +17,32 @@ def save_expenses():
     amount = amountEntry.get()
     expenseType = dropdownExpenses.get()
 
-    if not amount.isdigit():
+    #Validation
+    if not name or not amount or not expenseType:
+        messagebox.showinfo(title="Expenses Error", message="Fields cannot be empty!")
+        clear()
+        return
+    elif not name:
+        messagebox.showinfo(title="Expenses Error", message="Provide name of the expense!")
+        clear()
+        return
+    elif not amount.isdigit():
         messagebox.showinfo(title="Expenses Error", message="Amount has to be a number!")
         clear()
         return
+    elif not expenseType:
+        messagebox.showinfo(title="Expenses Error", message="Choose Expense type!")
+        clear()
+        return
 
+    #JSON structure
     new_row = {
         name: {
             "Amount": amount,
             "Expense Type": expenseType
         }
     }
+    #Open and add data to the .csv
     with open("data.json", "r") as data_file:
         expensesData = json.load(data_file)
 
@@ -41,11 +57,20 @@ def save_expenses():
 # ------------------------- Graph Pop-Up ------------------------ #
 def open_popup():
     top = Toplevel(window)
-    top.geometry("750x250")
+    top.geometry("800x400")
     top.title("Expenses Graph")
 
+    #Open .csv - just read
     with open("data.json", "r") as data_file:
         data = json.load(data_file)
+
+    tree = ttk.Treeview(top, columns=("Expense Name", "Amount"), show='headings')
+    tree.heading("Expense Name", text="Expense Name")
+    tree.heading("Amount", text="Amount")
+    tree.grid(row=0, column=0, sticky="n")
+
+    for name, info in data.items():
+        tree.insert("", END, values=(name, info["Amount"], info["Expense Type"]))
 
     income = 0
     expenses = 0
@@ -60,8 +85,15 @@ def open_popup():
     y = np.array([income, expenses])
     labels = ["Income", "Expenses"]
 
-    plt.pie(y, labels=labels, startangle=90)
-    plt.show()
+
+    fig = plt.Figure(figsize=(3,3), dpi=100)
+    ax = fig.add_subplot(111)
+    ax.pie(y, labels=labels)
+    ax.set_title("Income vs Expenses")
+
+    pie_chart = FigureCanvasTkAgg(fig, master=top)
+    pie_chart.draw()
+    pie_chart.get_tk_widget().grid(row=0, column=1, padx=30, sticky="n")
 
 # ---------------------------- UI ------------------------------- #
 window = Tk()
