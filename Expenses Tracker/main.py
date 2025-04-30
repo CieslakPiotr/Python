@@ -5,6 +5,7 @@ import json
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
+from datetime import date
 
 # ---------------------------- SAVE EXPENSES ------------------------------- #
 def save_expenses():
@@ -16,6 +17,7 @@ def save_expenses():
     name = expenseName.get().title()
     amount = amountEntry.get()
     expenseType = dropdownExpenses.get()
+    today = date.today().isoformat()
 
     #Validation
     if not name or not amount or not expenseType:
@@ -37,16 +39,20 @@ def save_expenses():
 
     #JSON structure
     new_row = {
-        name: {
-            "Amount": amount,
-            "Expense Type": expenseType
-        }
+        "Name": name,
+        "Amount": amount,
+        "Expense Type": expenseType,
+        "Date": today
     }
-    #Open and add data to the .csv
-    with open("data.json", "r") as data_file:
-        expensesData = json.load(data_file)
 
-    expensesData.update(new_row)
+    #Open and add data to the .csv
+    try:
+        with open("data.json", "r") as data_file:
+            expensesData = json.load(data_file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        expensesData = {}
+
+    expensesData.append(new_row)
 
     with open("data.json", "w") as data_file:
         json.dump(expensesData, data_file, indent=4)
@@ -54,8 +60,45 @@ def save_expenses():
     clear()
     messagebox.showinfo(title="Expenses Message", message="Expenses added successfully.")
 
+# ------------------------- Goals Pop-Up ------------------------ #
+
+def goals_popup():
+    top = Toplevel(window)
+    top.geometry("800x400")
+    top.title("Goals & Limits")
+
+# ------------------------- Calculate Pop-Up ------------------------ #
+
+def calculate_popup():
+    def calculation():
+        savings = int(savingEntry.get())
+        months = int(monthsEntry.get())
+        result = savings / months
+
+        messagebox.showinfo("Monthly Saving", f"You need to save {result:.2f}£ per month.")
+
+    top = Toplevel(window)
+    top.geometry("250x250")
+    top.title("Calculate")
+
+    # Amount
+    savingLabel = Label(top, text="How much do you want to save?:")
+    savingLabel.grid(row=0, column=0, padx=10, pady=10)
+    savingEntry = Entry(top, width=20)
+    savingEntry.grid(row=1, column=0, padx=10, pady=10)
+    savingEntry.focus()
+
+    # Months
+    monthsLabel = Label(top, text="In how many months?:")
+    monthsLabel.grid(row=2, column=0, padx=10, pady=10)
+    monthsEntry = Entry(top, width=20)
+    monthsEntry.grid(row=3, column=0, padx=10, pady=10)
+
+    calculate_button = Button(top, text="Calculate", command=calculation)
+    calculate_button.grid(row=4, column=0, columnspan=2, pady=15)
+
 # ------------------------- Graph Pop-Up ------------------------ #
-def open_popup():
+def expenses_popup():
     top = Toplevel(window)
     top.geometry("800x400")
     top.title("Expenses Graph")
@@ -64,7 +107,7 @@ def open_popup():
     with open("data.json", "r") as data_file:
         data = json.load(data_file)
 
-    tree = ttk.Treeview(top, columns=("Expense Name", "Amount"), show='headings')
+    tree = ttk.Treeview(top, columns=("Expense Name", "Amount"), show='headings', height=15)
     tree.heading("Expense Name", text="Expense Name")
     tree.heading("Amount", text="Amount")
     tree.grid(row=0, column=0, sticky="n")
@@ -85,7 +128,6 @@ def open_popup():
     y = np.array([income, expenses])
     labels = ["Income", "Expenses"]
 
-
     fig = plt.Figure(figsize=(3,3), dpi=100)
     ax = fig.add_subplot(111)
     ax.pie(y, labels=labels)
@@ -98,7 +140,7 @@ def open_popup():
 # ---------------------------- UI ------------------------------- #
 window = Tk()
 window.title("Expenses Tracker")
-window.geometry("600x400")
+window.geometry("650x400")
 
 #Resize column evenly with the same weight
 for i in range(6):
@@ -133,7 +175,13 @@ dropdownExpenses.grid(row=4, column=3, sticky="w", padx=5)
 add_button = Button(text="Add Expense", command=save_expenses)
 add_button.grid(row=5, column=0, columnspan=6)
 
-display_graph = Button(text="Show Expenses", command=open_popup)
-display_graph.grid(row=6, column=0, columnspan=6)
+display_graph = Button(text="Show Expenses", command=expenses_popup)
+display_graph.grid(row=6, column=2, padx=5)
+
+calculate = Button(text="Calculate", command=calculate_popup)
+calculate.grid(row=6, column=3, padx=5)
+
+calculate = Button(text="Goals & Limits", command=goals_popup)
+calculate.grid(row=6, column=4, sticky="w", padx=5)
 
 window.mainloop()
