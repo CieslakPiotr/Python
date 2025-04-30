@@ -39,10 +39,11 @@ def save_expenses():
 
     #JSON structure
     new_row = {
-        "Name": name,
-        "Amount": amount,
-        "Expense Type": expenseType,
-        "Date": today
+        name: {
+            "Amount": amount,
+            "Expense Type": expenseType,
+            "Date": today
+        }
     }
 
     #Open and add data to the .csv
@@ -74,8 +75,12 @@ def calculate_popup():
         savings = int(savingEntry.get())
         months = int(monthsEntry.get())
         result = savings / months
-
+        clear()
         messagebox.showinfo("Monthly Saving", f"You need to save {result:.2f}£ per month.")
+
+    def clear():
+        savingEntry.delete(0, END)
+        monthsEntry.delete(0, END)
 
     top = Toplevel(window)
     top.geometry("250x250")
@@ -100,30 +105,33 @@ def calculate_popup():
 # ------------------------- Graph Pop-Up ------------------------ #
 def expenses_popup():
     top = Toplevel(window)
-    top.geometry("800x400")
+    top.geometry("1000x400")
     top.title("Expenses Graph")
 
     #Open .csv - just read
     with open("data.json", "r") as data_file:
         data = json.load(data_file)
 
-    tree = ttk.Treeview(top, columns=("Expense Name", "Amount"), show='headings', height=15)
+    tree = ttk.Treeview(top, columns=("Expense Name", "Amount", "Expense Type"), show='headings', height=15)
     tree.heading("Expense Name", text="Expense Name")
     tree.heading("Amount", text="Amount")
+    tree.heading("Expense Type", text="Expense Type")
     tree.grid(row=0, column=0, sticky="n")
 
-    for name, info in data.items():
-        tree.insert("", END, values=(name, info["Amount"], info["Expense Type"]))
+    for entry in data:
+        for name, info in entry.items():
+            tree.insert("", END, values=(name, info["Amount"], info["Expense Type"]))
 
     income = 0
     expenses = 0
 
-    for item in data.values():
-        amount = int(item["Amount"])
-        if item["Expense Type"] == "Income":
-            income += amount
-        elif item["Expense Type"] == "Expense":
-            expenses += amount
+    for entry in data:
+        for _, item in entry.items():
+            amount = int(item["Amount"])
+            if item["Expense Type"] == "Income":
+                income += amount
+            elif item["Expense Type"] == "Expense":
+                expenses += amount
 
     y = np.array([income, expenses])
     labels = ["Income", "Expenses"]

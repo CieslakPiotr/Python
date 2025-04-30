@@ -1,14 +1,23 @@
-{
-    "Bus": {
-        "Amount": "8",
-        "Expense Type": "Expense"
+[
+    {
+        "Tfl": {
+            "Amount": "11",
+            "Expense Type": "Expense",
+            "Date": "2025-04-30"
+        }
     },
-    "Salary": {
-        "Amount": "2600",
-        "Expense Type": "Income"
+    {
+        "Tfl": {
+            "Amount": "14",
+            "Expense Type": "Expense",
+            "Date": "2025-04-30"
+        }
     },
-    "Taxi": {
-        "Amount": "28",
-        "Expense Type": "Expense"
+    {
+        "Salary": {
+            "Amount": "2500",
+            "Expense Type": "Income",
+            "Date": "2025-04-30"
+        }
     }
-}
+]
