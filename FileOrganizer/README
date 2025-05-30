@@ -1,0 +1,6 @@
+Program responsible for sorting files on the screen or current directory. 
+To make file work, file with organizer supposed to be relocated to the desired dictorionary and run.
+
+***Future Dev***
+-UI
+-Paste path to sort files under this path
