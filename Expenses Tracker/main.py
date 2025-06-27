@@ -64,9 +64,63 @@ def save_expenses():
 # ------------------------- Goals Pop-Up ------------------------ #
 
 def goals_popup():
+    def set_goals_and_limitations():
+        def clear_goals():
+            goalName.delete(0, END)
+            goalEntry.delete(0, END)
+
+        def save_goals():
+            gname = goalName.get().title()
+            gentry = goalEntry.get()
+
+            #JSON structure
+            new_row = {
+                gname: {
+                    "Amount": gentry,
+                }
+            }
+
+            #Open and add data to the .csv
+            try:
+                with open("goals.json", "r") as data_file:
+                    expensesData = json.load(data_file)
+            except (FileNotFoundError, json.JSONDecodeError):
+                expensesData = {}
+
+            expensesData.append(new_row)
+
+            with open("goals.json", "w") as data_file:
+                json.dump(expensesData, data_file, indent=4)
+
+            clear_goals()
+            messagebox.showinfo(title="Goals Message", message="Goal added successfully.")
+
+        top_goals = Toplevel(window)
+        top_goals.geometry("300x500")
+        top_goals.title("Set Goals & Limits")
+
+        #Goal name
+        goalNameLabel = Label(top_goals, text="Goal Name:")
+        goalNameLabel.grid(row=0, column=0, sticky="e", padx=5)
+        goalName = Entry(top_goals, width=20)
+        goalName.grid(row=0, column=1, sticky="w", padx=5)
+
+        #Goal amount
+        goalLabel = Label(top_goals, text="Goal Amount:")
+        goalLabel.grid(row=1, column=0, sticky="e", padx=5)
+        goalEntry = Entry(top_goals, width=20)
+        goalEntry.grid(row=1, column=1, sticky="w", padx=5)
+
+        #Add Goal
+        add_goal = Button(top_goals, text="Add Goal", command=save_goals)
+        add_goal.grid(row=2, columnspan=2, padx=5)
+
     top = Toplevel(window)
     top.geometry("800x400")
     top.title("Goals & Limits")
+
+    set_goals = Button(top, text="Set Goals & Limitations", command=set_goals_and_limitations)
+    set_goals.grid(row=0, column=1)
 
 # ------------------------- Calculate Pop-Up ------------------------ #
 
@@ -105,8 +159,8 @@ def calculate_popup():
 # ------------------------- Graph Pop-Up ------------------------ #
 def expenses_popup():
     top = Toplevel(window)
-    top.geometry("1000x400")
-    top.title("Expenses Graph")
+    top.geometry("950x350")
+    top.title("Expenses")
 
     #Open .csv - just read
     with open("data.json", "r") as data_file:

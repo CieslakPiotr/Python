@@ -1,23 +1,9 @@
 [
     {
-        "Tfl": {
-            "Amount": "11",
-            "Expense Type": "Expense",
-            "Date": "2025-04-30"
-        }
-    },
-    {
-        "Tfl": {
-            "Amount": "14",
-            "Expense Type": "Expense",
-            "Date": "2025-04-30"
-        }
-    },
-    {
         "Salary": {
             "Amount": "2500",
             "Expense Type": "Income",
-            "Date": "2025-04-30"
+            "Date": "2025-06-27"
         }
     }
 ]
