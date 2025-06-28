@@ -74,7 +74,7 @@ def goals_popup():
             gentry = goalEntry.get()
 
             #JSON structure
-            new_row = {
+            goals_row = {
                 gname: {
                     "Amount": gentry,
                 }
@@ -83,44 +83,55 @@ def goals_popup():
             #Open and add data to the .csv
             try:
                 with open("goals.json", "r") as data_file:
-                    expensesData = json.load(data_file)
+                    goals_data = json.load(data_file)
             except (FileNotFoundError, json.JSONDecodeError):
-                expensesData = {}
+                goals_data = {}
 
-            expensesData.append(new_row)
+            goals_data.append(goals_row)
 
             with open("goals.json", "w") as data_file:
-                json.dump(expensesData, data_file, indent=4)
+                json.dump(goals_data, data_file, indent=4)
 
             clear_goals()
             messagebox.showinfo(title="Goals Message", message="Goal added successfully.")
 
         top_goals = Toplevel(window)
-        top_goals.geometry("300x500")
+        top_goals.geometry("200x150")
         top_goals.title("Set Goals & Limits")
 
         #Goal name
         goalNameLabel = Label(top_goals, text="Goal Name:")
-        goalNameLabel.grid(row=0, column=0, sticky="e", padx=5)
+        goalNameLabel.grid(row=0, column=0, padx=5)
         goalName = Entry(top_goals, width=20)
-        goalName.grid(row=0, column=1, sticky="w", padx=5)
+        goalName.grid(row=1, column=0, padx=5)
 
         #Goal amount
         goalLabel = Label(top_goals, text="Goal Amount:")
-        goalLabel.grid(row=1, column=0, sticky="e", padx=5)
+        goalLabel.grid(row=3, column=0, padx=5)
         goalEntry = Entry(top_goals, width=20)
-        goalEntry.grid(row=1, column=1, sticky="w", padx=5)
+        goalEntry.grid(row=4, column=0, padx=5)
 
         #Add Goal
         add_goal = Button(top_goals, text="Add Goal", command=save_goals)
-        add_goal.grid(row=2, columnspan=2, padx=5)
+        add_goal.grid(row=5, pady=5)
 
     top = Toplevel(window)
     top.geometry("800x400")
     top.title("Goals & Limits")
 
     set_goals = Button(top, text="Set Goals & Limitations", command=set_goals_and_limitations)
-    set_goals.grid(row=0, column=1)
+    set_goals.grid(row=0, column=0)
+
+    goals = []
+
+    with open("goals.json", "r") as data_file:
+        goals_to_delete = json.load(data_file)
+        for goal in goals_to_delete:
+            for name in goal:
+                goals.append(name)
+
+    dropdownGoals = ttk.Combobox(top, values=goals)
+    dropdownGoals.grid(row=1, column=0)
 
 # ------------------------- Calculate Pop-Up ------------------------ #
 
