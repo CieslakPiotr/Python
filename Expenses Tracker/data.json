@@ -5,5 +5,12 @@
             "Expense Type": "Income",
             "Date": "2025-06-27"
         }
+    },
+    {
+        "Energy": {
+            "Amount": "100",
+            "Expense Type": "Expense",
+            "Date": "2025-06-29"
+        }
     }
 ]

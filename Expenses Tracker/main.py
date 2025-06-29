@@ -77,6 +77,7 @@ def goals_popup():
             goals_row = {
                 gname: {
                     "Amount": gentry,
+                    "Saved": 0
                 }
             }
 
@@ -115,12 +116,47 @@ def goals_popup():
         add_goal = Button(top_goals, text="Add Goal", command=save_goals)
         add_goal.grid(row=5, pady=5)
 
+    def remove_goal():
+        chosen_goal = dropdownGoals.get()
+
+        if not chosen_goal:
+            messagebox.showinfo(title="Goals Error", message="Choose a goal!")
+
+        try:
+            with open("goals.json", "r") as data_file:
+                goals_data = json.load(data_file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            goals_data = []
+
+        new_goals_data = []
+
+        for goal_dict in goals_data:
+            if chosen_goal not in goal_dict:
+                new_goals_data.append(goal_dict)
+
+        goals_data = new_goals_data
+
+        with open("goals.json", "w") as f:
+            json.dump(goals_data, f, indent=4)
+
+        #New values for dropdown
+        new_values = [name for goal in goals_data for name in goal]
+        dropdownGoals["values"] = new_values
+        dropdownGoals.set("")  #clear current selection
+
+        messagebox.showinfo("Remove Goal", f"Goal “{chosen_goal}” removed.")
+
+
+
     top = Toplevel(window)
     top.geometry("800x400")
     top.title("Goals & Limits")
 
     set_goals = Button(top, text="Set Goals & Limitations", command=set_goals_and_limitations)
     set_goals.grid(row=0, column=0)
+
+    add_money_to_goal = Button(top, text="Add money to your goal")
+    add_money_to_goal.grid(row=1, column=0)
 
     goals = []
 
@@ -131,7 +167,26 @@ def goals_popup():
                 goals.append(name)
 
     dropdownGoals = ttk.Combobox(top, values=goals)
-    dropdownGoals.grid(row=1, column=0)
+    dropdownGoals.grid(row=2, column=0)
+
+    remove_goal_button = Button(top, text="Remove Goal", command=remove_goal)
+    remove_goal_button.grid(row=3, column=0)
+
+    #Display goals and savings
+
+    Label(top, text="Goals Progress", font=("Arial", 20, "bold")).grid(row=0, column=1)
+
+    with open("goals.json", "r") as goals_data:
+        goals_data = json.load(goals_data)
+
+    row = 1
+    row2 = 2
+    for goal in goals_data:
+        for name, details in goal.items():
+            Label(top, text=name, font=("Arial", 20, "bold")).grid(row=row, column=1, columnspan=2)
+            Label(top, text=f"{details['Saved']}/{details['Amount']}", font=("Arial", 20, "bold")).grid(row=row2, column=1)
+            row += 2
+            row2 += 2
 
 # ------------------------- Calculate Pop-Up ------------------------ #
 

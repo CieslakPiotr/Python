@@ -1,12 +1,20 @@
 [
     {
-        "New Bike": {
-            "Amount": "1000"
+        "Car": {
+            "Amount": "10000",
+            "Saved": 0
         }
     },
     {
-        "Car": {
-            "Amount": "5000"
+        "Bike": {
+            "Amount": "3000",
+            "Saved": 0
+        }
+    },
+    {
+        "Tv": {
+            "Amount": "600",
+            "Saved": 0
         }
     }
 ]
