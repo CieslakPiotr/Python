@@ -146,17 +146,48 @@ def goals_popup():
 
         messagebox.showinfo("Remove Goal", f"Goal “{chosen_goal}” removed.")
 
+    def add_to_goal():
+        top_add_goals = Toplevel(window)
+        top_add_goals.geometry("225x150")
+        top_add_goals.title("Set Goals & Limits")
+        button_width = 20
 
+        # Goal name
+        goals = []
+
+        with open("goals.json", "r") as data_file:
+            add_to_goals = json.load(data_file)
+            for goal in add_to_goals:
+                for name in goal:
+                    goals.append(name)
+
+        goalName = Label(top_add_goals, text="Goal")
+        goalName.grid(row=1, column=0, padx=5)
+
+        dropdownGoals = ttk.Combobox(top_add_goals, values=goals, width=button_width)
+        dropdownGoals.grid(row=2, column=0)
+
+        # Goal amount
+        goalLabel = Label(top_add_goals, text="Add money:")
+        goalLabel.grid(row=3, column=0, padx=5)
+        goalEntry = Entry(top_add_goals, width=button_width)
+        goalEntry.grid(row=4, column=0, padx=5)
+
+        # Add Goal
+        add_goal = Button(top_add_goals, text="Add funds", width=button_width)
+        add_goal.grid(row=5, pady=5)
 
     top = Toplevel(window)
-    top.geometry("800x400")
-    top.title("Goals & Limits")
+    top.geometry("400x400")
+    top.title("Add to goal")
+    button_width = 20
+    button_height = 1
 
-    set_goals = Button(top, text="Set Goals & Limitations", command=set_goals_and_limitations)
-    set_goals.grid(row=0, column=0)
+    set_goals = Button(top, text="Set Goals & Limitations", command=set_goals_and_limitations, width=button_width, height=button_height)
+    set_goals.grid(row=4, column=0)
 
-    add_money_to_goal = Button(top, text="Add money to your goal")
-    add_money_to_goal.grid(row=1, column=0)
+    add_money_to_goal = Button(top, text="Add money to your goal", command=add_to_goal, width=button_width, height=button_height)
+    add_money_to_goal.grid(row=5, column=0)
 
     goals = []
 
@@ -166,14 +197,13 @@ def goals_popup():
             for name in goal:
                 goals.append(name)
 
-    dropdownGoals = ttk.Combobox(top, values=goals)
-    dropdownGoals.grid(row=2, column=0)
+    dropdownGoals = ttk.Combobox(top, values=goals, width=button_width)
+    dropdownGoals.grid(row=6, column=0)
 
-    remove_goal_button = Button(top, text="Remove Goal", command=remove_goal)
-    remove_goal_button.grid(row=3, column=0)
+    remove_goal_button = Button(top, text="Remove Goal", command=remove_goal, width=button_width, height=button_height)
+    remove_goal_button.grid(row=7, column=0)
 
     #Display goals and savings
-
     Label(top, text="Goals Progress", font=("Arial", 20, "bold")).grid(row=0, column=1)
 
     with open("goals.json", "r") as goals_data:
@@ -183,8 +213,8 @@ def goals_popup():
     row2 = 2
     for goal in goals_data:
         for name, details in goal.items():
-            Label(top, text=name, font=("Arial", 20, "bold")).grid(row=row, column=1, columnspan=2)
-            Label(top, text=f"{details['Saved']}/{details['Amount']}", font=("Arial", 20, "bold")).grid(row=row2, column=1)
+            Label(top, text=name, font=("Arial", 20, "bold")).grid(row=row, column=1)
+            Label(top, text=f"{details['Saved']}/{details['Amount']}", font=("Arial", 20)).grid(row=row2, column=1)
             row += 2
             row2 += 2
 
