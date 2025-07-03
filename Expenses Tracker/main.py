@@ -147,6 +147,34 @@ def goals_popup():
         messagebox.showinfo("Remove Goal", f"Goal “{chosen_goal}” removed.")
 
     def add_to_goal():
+        def add_money():
+            goal_name = dropdownGoals.get()
+            try:
+                amount = int(goalEntry.get())
+            except ValueError:
+                print("Please enter a valid number.")
+                return
+
+            with open("goals.json", "r") as data_file:
+                goals = json.load(data_file)
+
+            for goal in goals:
+                if goal_name in goal:
+                    current_saved = goal[goal_name]["Saved"]
+                    total_amount = int(goal[goal_name]["Amount"])
+                    new_saved = current_saved + amount
+                    if new_saved > total_amount:
+                        print(f"Cannot add ${amount}. It exceeds the goal of ${total_amount}.")
+                        return
+                    goal[goal_name]["Saved"] = new_saved
+                    messagebox.showinfo("Money Added", f"Funds added!.")
+                    break
+            else:
+                return
+
+            with open("goals.json", "w") as data_file:
+                json.dump(goals, data_file, indent=4)
+
         top_add_goals = Toplevel(window)
         top_add_goals.geometry("225x150")
         top_add_goals.title("Set Goals & Limits")
@@ -174,7 +202,7 @@ def goals_popup():
         goalEntry.grid(row=4, column=0, padx=5)
 
         # Add Goal
-        add_goal = Button(top_add_goals, text="Add funds", width=button_width)
+        add_goal = Button(top_add_goals, text="Add funds", width=button_width, command=add_money)
         add_goal.grid(row=5, pady=5)
 
     top = Toplevel(window)
